@@ -1,0 +1,137 @@
+{
+  "name": "RabbitMQ 4 Message Broker with Management UI",
+  "description": "AMQP broker with dashboard, metrics and persistent queues, ready to use.",
+  "category": "Queues",
+  "tags": [
+    "rabbitmq",
+    "amqp",
+    "message-broker",
+    "message-queue",
+    "queues",
+    "pubsub",
+    "prometheus",
+    "management-ui"
+  ],
+  "image": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/rabbitmq.svg",
+  "upstream": {
+    "repo": "rabbitmq/rabbitmq-server",
+    "version": "v4.3.6",
+    "image": "rabbitmq:4.3.6-management",
+    "checked": "2026-10-20"
+  },
+  "services": {
+    "RabbitMQ": {
+      "icon": "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/rabbitmq.svg",
+      "source": {
+        "repo": "baranberkay96/rabbitmq-railway",
+        "rootDirectory": "/services/rabbitmq"
+      },
+      "startCommand": null,
+      "preDeployCommand": null,
+      "healthcheckPath": "/",
+      "healthcheckTimeout": 300,
+      "restartPolicyType": "ALWAYS",
+      "restartPolicyMaxRetries": null,
+      "numReplicas": 1,
+      "cronSchedule": null,
+      "publicDomain": true,
+      "targetPort": 15672,
+      "tcpProxy": null,
+      "volume": {
+        "mountPath": "/var/lib/rabbitmq"
+      },
+      "variables": {
+        "PORT": {
+          "defaultValue": "15672",
+          "description": "Management UI port: public domain target; the healthcheck GETs / (login page, no auth needed).",
+          "required": false
+        },
+        "RABBITMQ_DEFAULT_USER": {
+          "defaultValue": "admin",
+          "description": "Administrator created with a new database: management UI and AMQP login. Not 'guest'.",
+          "required": false
+        },
+        "RABBITMQ_DEFAULT_PASS": {
+          "defaultValue": "${{secret(32, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\")}}",
+          "description": "Administrator password (16+ chars: letters, digits, . _ -). Applied only when the database is created.",
+          "required": false
+        },
+        "RABBITMQ_ERLANG_COOKIE": {
+          "defaultValue": "${{secret(48, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\")}}",
+          "description": "Erlang cookie (shared secret for rabbitmqctl and other CLI tools), written to the cookie file.",
+          "required": false
+        },
+        "RABBITMQ_NODENAME": {
+          "defaultValue": "rabbit@localhost",
+          "description": "Fixed node name; the database folder is named after it. Do not change after the first deploy.",
+          "required": false
+        },
+        "RABBITMQ_USE_LONGNAME": {
+          "defaultValue": "false",
+          "description": "Short node names (required for rabbit@localhost).",
+          "required": false
+        },
+        "RABBITMQ_ENABLED_PLUGINS_FILE": {
+          "defaultValue": "/var/lib/rabbitmq/enabled_plugins",
+          "description": "Plugin list on the volume, so rabbitmq-plugins enable/disable survives redeploys.",
+          "required": false
+        },
+        "RABBITMQ_URL": {
+          "defaultValue": "amqp://${{RABBITMQ_DEFAULT_USER}}:${{RABBITMQ_DEFAULT_PASS}}@${{RAILWAY_PRIVATE_DOMAIN}}:5672",
+          "description": "AMQP URL on the private network (default vhost). Reference it as ${{RabbitMQ.RABBITMQ_URL}}.",
+          "required": false
+        },
+        "AMQP_URL": {
+          "defaultValue": "${{RABBITMQ_URL}}",
+          "description": "Alias of RABBITMQ_URL for libraries that read AMQP_URL.",
+          "required": false
+        },
+        "RABBITMQ_HOST": {
+          "defaultValue": "${{RAILWAY_PRIVATE_DOMAIN}}",
+          "description": "Private hostname for clients configured with separate host/port settings.",
+          "required": false
+        },
+        "RABBITMQ_PORT": {
+          "defaultValue": "5672",
+          "description": "AMQP port on the private network.",
+          "required": false
+        },
+        "RABBITMQ_MANAGEMENT_URL": {
+          "defaultValue": "http://${{RAILWAY_PRIVATE_DOMAIN}}:15672",
+          "description": "Management HTTP API on the private network (HTTP Basic auth with the administrator).",
+          "required": false
+        },
+        "RABBITMQ_PROMETHEUS_URL": {
+          "defaultValue": "http://${{RAILWAY_PRIVATE_DOMAIN}}:15692/metrics",
+          "description": "Prometheus scrape URL on the private network (no auth; never exposed publicly).",
+          "required": false
+        },
+        "MEMORY_HIGH_WATERMARK": {
+          "defaultValue": "0.6",
+          "description": "Publishers block above this: fraction (max 0.9) of the container memory limit, or a size like 2GiB.",
+          "required": false
+        },
+        "DISK_FREE_LIMIT": {
+          "defaultValue": "auto",
+          "description": "Publishers block when free disk drops below this. auto = 20% of the volume (50 MB to 2 GB), or e.g. 1GB.",
+          "required": false
+        },
+        "ERLANG_SCHEDULERS": {
+          "defaultValue": "auto",
+          "description": "Erlang scheduler threads. auto = the container CPU quota, at most 8; or a number.",
+          "required": false
+        },
+        "ALLOW_TRANSIENT_QUEUES": {
+          "defaultValue": "false",
+          "description": "true permits non-durable, non-exclusive queues (deprecated, denied by default since 4.3) for older clients.",
+          "required": false
+        },
+        "RAILWAY_DEPLOYMENT_DRAINING_SECONDS": {
+          "defaultValue": "60",
+          "description": "Seconds between SIGTERM and SIGKILL on redeploy, so RabbitMQ can stop cleanly (Railway default 0).",
+          "required": false
+        }
+      }
+    }
+  }
+}
