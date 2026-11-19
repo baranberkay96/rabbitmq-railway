@@ -1,6 +1,6 @@
 # Deploy and Host RabbitMQ with Railway
 
-[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/rabbitmq-4-message-broker-with-management-ui?referralCode=20H68q)
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/rabbitmq-4-message-broker-with-managemen?referralCode=20H68q)
 
 RabbitMQ is an open-source message broker for AMQP 0-9-1 and AMQP 1.0, with plugins for MQTT, STOMP and streams. This community template runs a RabbitMQ 4.3 node with a persistent volume, the management UI on a password-protected HTTPS domain, Prometheus metrics, and ready-made connection URLs for your other Railway services.
 
